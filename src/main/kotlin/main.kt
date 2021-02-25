@@ -40,7 +40,6 @@ fun firstTask(arguments: Map<String, String>) {
 }
 
 fun drawChart(points: List<Point?>) {
-    // Create Chart
     val chart =
         XYChartBuilder()
             .width(1000)
@@ -50,13 +49,11 @@ fun drawChart(points: List<Point?>) {
             .yAxisTitle("Y")
             .build()
 
-    // Customize Chart
     chart.styler.defaultSeriesRenderStyle = XYSeries.XYSeriesRenderStyle.Scatter
     chart.styler.isChartTitleVisible = false
     chart.styler.legendPosition = Styler.LegendPosition.InsideSW
     chart.styler.markerSize = 4
 
-    // Series
     chart.addSeries(
         "Elliptic curve",
         points.map { it?.x?.toLong() },

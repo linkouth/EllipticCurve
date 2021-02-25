@@ -20,7 +20,6 @@ class EllipticCurve(l: Int, m: BigInteger) {
             val p = generateRandom(l)
             println("p: $p")
 
-            // Шаг 2
             val a: BigInteger
             val b: BigInteger
             try {
@@ -35,14 +34,12 @@ class EllipticCurve(l: Int, m: BigInteger) {
                 continue
             }
 
-            // Шаг 3
             val (n, r) = getNAndR(p, a, b) ?: null to null
             if (n == null || r == null) {
                 continue
             }
             println("n: $n, r: $r")
 
-            // Шаг 4
             if (!isSecure(p, r, m)) continue
 
             try {

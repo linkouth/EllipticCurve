@@ -9,14 +9,6 @@ const val CERTAINTY = 100
 const val THRESHOLD = 12
 val SECURE_RND = SecureRandom()
 
-/**
- * Шаг 1
- *
- * Генерация простого числа p = 1 mod 4 длины l бит
- *
- * @param bitCount a prime number bit length
- * @return a prime number satisfying the conditions
- */
 fun generateRandom(bitCount: Int): BigInteger {
     val start = BigInteger.TWO.pow(bitCount - 1).toLong()
     val end = BigInteger.TWO.pow(bitCount).toLong()
@@ -27,13 +19,6 @@ fun generateRandom(bitCount: Int): BigInteger {
     return random.toBigInteger()
 }
 
-/**
- * Проверка на простоту методом Соловея-Штрассена
- *
- * @param number a number to check
- * @param rounds a number of rounds
- * @return is the number prime or not
- */
 fun solovayStrassenTest(number: Long, rounds: Int=CERTAINTY): Boolean {
     if (number % 2 == 0L || number % 3 == 0L || number % 5 == 0L) {
         return false
@@ -57,13 +42,6 @@ fun solovayStrassenTest(number: Long, rounds: Int=CERTAINTY): Boolean {
     return true
 }
 
-/**
- * Нахождение символа Лежандра
- *
- * @param a an integer number
- * @param p a prime number
- * @return a legendre symbol
- */
 fun legendre(a: Long, p: Long): Long {
     assert(p >= 2)
     if (a == 0L || a == 1L) {
@@ -84,16 +62,6 @@ fun legendre(a: Long, p: Long): Long {
     return r
 }
 
-/**
- * Алгритм 7.8.1
- * Часть шага 2
- *
- * Разложение простого числа на сумму квадратов: p = a * a + d * b * b
- *
- * @param prime the prime number
- * @param d the ratio
- * @return a pair of a and b
- */
 fun sq2(prime: BigInteger, d: BigInteger=BigInteger.ONE): Pair<BigInteger, BigInteger>? {
     if (prime.bitLength() < THRESHOLD) {
         return trialSq2(prime)
@@ -156,16 +124,6 @@ fun sq2(prime: BigInteger, d: BigInteger=BigInteger.ONE): Pair<BigInteger, BigIn
     return Pair(aList[i], bList[i])
 }
 
-/**
- * Алгоритм 7.5.2
- * Часть шага 2
- *
- * Извлечение квадратного корня в поле
- *
- * @param a the field element
- * @param prime the field characteristic
- * @return a field square root
- */
 fun fieldSqrt(a: BigInteger, prime: BigInteger): BigInteger? {
     if (prime % (8).toBigInteger() == (5).toBigInteger()) {
         val b = a.modPow((prime + 3.toBigInteger()) / 8.toBigInteger(), prime)
@@ -193,15 +151,6 @@ fun fieldSqrt(a: BigInteger, prime: BigInteger): BigInteger? {
     return null
 }
 
-/**
- * Часть шага 2
- *
- * Тривиальное нахождение разложения p = a * a + factor * b * b
- *
- * @param p the prime number
- * @param factor the ratio
- * @return a pair of a and b
- */
 fun trialSq2(p: BigInteger, factor: BigInteger= BigInteger.ONE): Pair<BigInteger, BigInteger>? {
     var a = BigInteger.ONE
     while (a < p) {
@@ -217,16 +166,6 @@ fun trialSq2(p: BigInteger, factor: BigInteger= BigInteger.ONE): Pair<BigInteger
     return null
 }
 
-/**
- * Шаг 3
- *
- * Нахождение N и r по параметрам a и b, где a * a + b * b = p
- *
- * @param p the prime number
- * @param a the first factor
- * @param b the second factor
- * @return a pair of N and r
- */
 fun getNAndR(p: BigInteger, a: BigInteger, b: BigInteger): Pair<BigInteger, BigInteger>? {
     val possibleT = listOf(
         -BigInteger.TWO * a, BigInteger.TWO * a,
@@ -247,16 +186,6 @@ fun getNAndR(p: BigInteger, a: BigInteger, b: BigInteger): Pair<BigInteger, BigI
     return null
 }
 
-/**
- * Шаг 3
- *
- * Проверка на безопасность подобранных параметров
- *
- * @param p a prime number
- * @param r a prime number less than p
- * @param m a parameter of security
- * @return is p, r secure
- */
 fun isSecure(p: BigInteger, r: BigInteger, m: BigInteger): Boolean {
     if (p == r) return false
     for (i in 1..m.toLong()) {
@@ -265,16 +194,6 @@ fun isSecure(p: BigInteger, r: BigInteger, m: BigInteger): Boolean {
     return true
 }
 
-/**
- * Шаг 5
- *
- * Генерация начальной точки согласно условиям
- *
- * @param p a prime number
- * @param n a parameter N
- * @param ratio a ration of N and r
- * @return an initial point and coefficient A
- */
 fun generatePoint(p: BigInteger, n: BigInteger, ratio: BigInteger): Pair<Point, BigInteger> {
     while (true) {
         val x = BigInteger(p.bitLength(), SECURE_RND).mod(p)
@@ -294,29 +213,12 @@ fun generatePoint(p: BigInteger, n: BigInteger, ratio: BigInteger): Pair<Point, 
     }
 }
 
-/**
- * Проверка на квадратичный вычет
- *
- * @param a an integer number
- * @param p a prime number
- * @return is a quadratic residue modulo p
- */
 fun isQuadraticResidue(a: BigInteger, p: BigInteger): Boolean {
     if (a.mod(p).modPow((p - BigInteger.ONE) / BigInteger.TWO, p) == BigInteger.ONE)
         return true
     return false
 }
 
-/**
- * Шаг 6
- * Проверка сгенерированной точки
- *
- * @param point a point to check
- * @param n a parameter N
- * @param p a modulo
- * @param coefficientA the A in equation y * y = x * x * x + a * x + b
- * @return is point matched or not
- */
 fun checkInfinitePoint(
     point: Point,
     n: BigInteger,
@@ -329,15 +231,6 @@ fun checkInfinitePoint(
     return false
 }
 
-/**
- * Сложение точки times раз
- *
- * @param a a point to add
- * @param times a number of addition
- * @param p a modulo
- * @param coefficientA the A in equation y * y = x * x * x + a * x + b
- * @return the result of times addition
- */
 fun sumPointNTimes(
     a: Point,
     times: BigInteger,
@@ -368,15 +261,6 @@ fun sumPointNTimes(
     return ans
 }
 
-/**
- * Сложение точек кривой
- *
- * @param a the first point
- * @param b the second point
- * @param p the modulo
- * @param coefficientA the A in equation y * y = x * x * x + a * x + b
- * @return the result of addition
- */
 fun sumPoints(
     a: Point?,
     b: Point?,
