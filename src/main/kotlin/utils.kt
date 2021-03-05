@@ -194,7 +194,7 @@ fun isSecure(p: BigInteger, r: BigInteger, m: BigInteger): Boolean {
     return true
 }
 
-fun generatePoint(p: BigInteger, n: BigInteger, ratio: BigInteger): Pair<Point, BigInteger> {
+fun generatePoint(p: BigInteger, n: BigInteger, r: BigInteger): Pair<Point, BigInteger> {
     while (true) {
         val x = BigInteger(p.bitLength(), SECURE_RND).mod(p)
         val y = BigInteger(p.bitLength(), SECURE_RND).mod(p)
@@ -204,8 +204,8 @@ fun generatePoint(p: BigInteger, n: BigInteger, ratio: BigInteger): Pair<Point, 
 
         val a = ((y * y - x * x * x) * x.modInverse(p)).mod(p)
 
-        if (ratio == BigInteger.TWO && isQuadraticResidue(-a, p)) continue
-        else if (ratio == (4).toBigInteger() && !isQuadraticResidue(-a, p)) continue
+        if ((n / r) == BigInteger.TWO && legendre(-a.toLong(), p.toLong()) != -1L) continue
+        else if ((n / r) == (4).toBigInteger() && legendre(-a.toLong(), p.toLong()) != 1L) continue
 
         val point = Point(x, y)
 
@@ -270,11 +270,14 @@ fun sumPoints(
     if (a == null) return b
     if (b == null) return a
 
-    if ((a == b && a.y == BigInteger.ZERO) || (a != b && a.x == b.x)) {
+//    if ((a == b && a.y == BigInteger.ZERO) || (a.y != b.y && a.x == b.x)) {
+//        return null
+//    }
+    if (a.y.modPow(BigInteger.TWO, p) == b.y.modPow(BigInteger.TWO, p) && a.y != b.y && a.x == b.x) {
         return null
     }
 
-    val lambda = if (a == b) {
+    val lambda = if (a.x == b.x) {
         (((3).toBigInteger() * a.x * a.x + coefficientA) * (BigInteger.TWO * a.y).modInverse(p)).mod(p)
     } else {
         ((b.y - a.y).mod(p) * (b.x - a.x).mod(p).modInverse(p)).mod(p)

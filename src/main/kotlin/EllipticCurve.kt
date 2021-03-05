@@ -7,12 +7,12 @@ data class Point(val x: BigInteger, val y: BigInteger) {
 }
 
 class EllipticCurve(l: Int, m: BigInteger) {
-    val p: BigInteger
-    private val n: BigInteger
-    val r: BigInteger
+    var p: BigInteger
+    private var n: BigInteger
+    var r: BigInteger
     private var initPoint: Point
     var coefficientA: BigInteger
-    val q: Point?
+    val q: Point
     val points: List<Point?>
 
     init {
@@ -43,7 +43,7 @@ class EllipticCurve(l: Int, m: BigInteger) {
             if (!isSecure(p, r, m)) continue
 
             try {
-                val (initPoint, coefficientA) = generatePoint(p, n, n / r)
+                val (initPoint, coefficientA) = generatePoint(p, n, r)
                 this.initPoint = initPoint
                 this.coefficientA = coefficientA
             } catch (e: java.lang.ArithmeticException) {
@@ -55,7 +55,7 @@ class EllipticCurve(l: Int, m: BigInteger) {
 
             println("initPoint: $initPoint, coefficientA: $coefficientA")
 
-            val q = sumPointNTimes(initPoint, n / r, p, coefficientA)
+            val q = sumPointNTimes(initPoint, n / r, p, coefficientA) ?: continue
             this.q = q
 
             println("Q: $q")

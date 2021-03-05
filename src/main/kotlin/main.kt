@@ -1,4 +1,5 @@
 import java.io.File
+import kotlin.system.exitProcess
 import org.knowm.xchart.SwingWrapper
 import org.knowm.xchart.XYChartBuilder
 import org.knowm.xchart.XYSeries
@@ -29,6 +30,10 @@ fun parseArguments(args: Array<String>): Map<String, String> {
 
 fun firstTask(arguments: Map<String, String>) {
     val l: Int = arguments[BIT_LENGTH]?.toInt() ?: 16
+    if (l < 4) {
+        println("Ошибка: l < 4")
+        exitProcess(1)
+    }
     val m = arguments[SECURITY_ROUNDS]?.toBigInteger() ?: (5).toBigInteger()
     val ellipticCurve = EllipticCurve(l, m)
 
