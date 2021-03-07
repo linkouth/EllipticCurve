@@ -6,19 +6,19 @@ data class Point(val x: BigInteger, val y: BigInteger) {
     }
 }
 
-class EllipticCurve(l: Int, m: BigInteger) {
+class EllipticCurve(l: Int, m: BigInteger = BigInteger.ONE) {
     var p: BigInteger
     private var n: BigInteger
     var r: BigInteger
     private var initPoint: Point
     var coefficientA: BigInteger
-    val q: Point
+    var q: Point
     val points: List<Point?>
 
     init {
         while (true) {
             val p = generateRandom(l)
-            println("p: $p")
+//            println("p: $p")
 
             val a: BigInteger
             val b: BigInteger
@@ -29,7 +29,7 @@ class EllipticCurve(l: Int, m: BigInteger) {
                 }
                 a = first
                 b = second
-                println("a: $a, b: $b")
+//                println("a: $a, b: $b")
             } catch (e: java.lang.ArithmeticException) {
                 continue
             }
@@ -38,7 +38,7 @@ class EllipticCurve(l: Int, m: BigInteger) {
             if (n == null || r == null) {
                 continue
             }
-            println("n: $n, r: $r")
+//            println("n: $n, r: $r")
 
             if (!isSecure(p, r, m)) continue
 
@@ -53,19 +53,26 @@ class EllipticCurve(l: Int, m: BigInteger) {
             this.n = n
             this.r = r
 
-            println("initPoint: $initPoint, coefficientA: $coefficientA")
+//            println("initPoint: $initPoint, coefficientA: $coefficientA")
 
             val q = sumPointNTimes(initPoint, n / r, p, coefficientA) ?: continue
             this.q = q
 
-            println("Q: $q")
+//            println("Q: $q")
 
             val points = getCurvePoints(this.q, this.p, this.coefficientA)
-            println("points number: ${points.size}")
+//            println("points number: ${points.size}")
 
             this.points = points
 
             break
         }
+    }
+
+    constructor(p: BigInteger, r: BigInteger, coefficientA: BigInteger, q: Point) : this(BYTE_LENGTH) {
+        this.p = p
+        this.r = r
+        this.coefficientA = coefficientA
+        this.q = q
     }
 }

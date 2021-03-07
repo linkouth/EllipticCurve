@@ -25,6 +25,7 @@ build/
 !**/test/**/build
 *.iml
 !**/testData/**/*.iml
+.idea/*
 .idea/libraries/Gradle*.xml
 .idea/libraries/Maven*.xml
 .idea/artifacts/PILL_*.xml
@@ -62,4 +63,7 @@ local.properties
 buildSrcTmp/
 distTmp/
 outTmp/
-firstTask/
+firstTask/*
+!firstTask/.gitkeep
+secondTask/*
+!secondTask/.gitkeep

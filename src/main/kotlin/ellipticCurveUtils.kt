@@ -213,12 +213,6 @@ fun generatePoint(p: BigInteger, n: BigInteger, r: BigInteger): Pair<Point, BigI
     }
 }
 
-fun isQuadraticResidue(a: BigInteger, p: BigInteger): Boolean {
-    if (a.mod(p).modPow((p - BigInteger.ONE) / BigInteger.TWO, p) == BigInteger.ONE)
-        return true
-    return false
-}
-
 fun checkInfinitePoint(
     point: Point,
     n: BigInteger,
@@ -288,6 +282,16 @@ fun sumPoints(
     return Point(x, y)
 }
 
+fun unaryMinus(point: Point?, p: BigInteger): Point? {
+    return if (point == null) null else Point(point.x, (-point.y).mod(p))
+}
+
+fun subtractPoints(
+    a: Point?, b: Point?, p: BigInteger, coefficientA: BigInteger
+): Point? {
+    return sumPoints(a, unaryMinus(b, p), p, coefficientA)
+}
+
 fun getCurvePoints(q: Point?, p: BigInteger, coefficientA: BigInteger): List<Point?> {
     var currentPoint = sumPoints(q, q, p, coefficientA)
     val pointsList = mutableListOf(q, currentPoint)
@@ -298,4 +302,9 @@ fun getCurvePoints(q: Point?, p: BigInteger, coefficientA: BigInteger): List<Poi
     }
 
     return pointsList.toList()
+}
+
+fun pointBelongsToCurve(point: Point?, p: BigInteger, coefficientA: BigInteger): Boolean {
+    if (point == null) return true
+    return point.y.modPow(BigInteger.TWO, p) == (point.x.modPow((3).toBigInteger(), p) + coefficientA * point.x).mod(p)
 }
