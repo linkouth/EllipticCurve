@@ -1,6 +1,13 @@
 import java.io.File
 import java.security.MessageDigest
 import java.math.BigInteger
+import java.nio.charset.StandardCharsets
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
+import javax.crypto.spec.PBEKeySpec
+import java.util.*
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.IvParameterSpec
 import kotlin.system.exitProcess
 import org.knowm.xchart.SwingWrapper
 import org.knowm.xchart.XYChartBuilder
@@ -13,6 +20,7 @@ fun main(args: Array<String>) {
     when (arguments[MODE]) {
         "1" -> firstTask(arguments)
         "2" -> secondTask(arguments)
+        "4" -> fourthTask(arguments)
     }
 }
 
@@ -80,6 +88,35 @@ fun writeCurveParams(ellipticCurve: EllipticCurve, filePath: String="$FIRST_TASK
 fun sha1(string: String): ByteArray {
     val md = MessageDigest.getInstance("SHA1")
     return md.digest(string.toByteArray())
+}
+
+fun aesHelper(key: BigInteger): Pair<SecretKeySpec, IvParameterSpec> {
+    val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+    val spec = PBEKeySpec(key.toString().toCharArray(), SALT.toByteArray(), 65536, 256)
+    val tmp = factory.generateSecret(spec)
+    val secretKey = SecretKeySpec(tmp.encoded, "AES")
+
+    val iv = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    val ivspec = IvParameterSpec(iv)
+
+    return secretKey to ivspec
+}
+
+fun aesEncrypt(message: String, key: BigInteger): String? {
+    val (secretKey, ivspec) = aesHelper(key)
+
+    val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+    cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec)
+    return Base64.getEncoder()
+        .encodeToString(cipher.doFinal(message.toByteArray(StandardCharsets.UTF_8)))
+}
+
+fun aesDecrypt(cipherText: String, key: BigInteger): String {
+    val (secretKey, ivspec) = aesHelper(key)
+
+    val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+    cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec)
+    return String(cipher.doFinal(Base64.getDecoder().decode(cipherText)))
 }
 
 fun secondTask(arguments: Map<String, String>) {
@@ -279,3 +316,25 @@ fun checkSigns() {
         println("e != eStreak")
     }
 }
+
+fun fourthTask(arguments: Map<String, String>) {
+    if (arguments[STEP] == null) {
+        println("Передайте номер шага")
+        exitProcess(1)
+    }
+
+    when (arguments[STEP]) {
+        "1" -> LogProving.generateCurve()
+        "2" -> LogProving.generateP()
+        "3" -> LogProving.generateK()
+        "4" -> LogProving.generateKStreak()
+        "5" -> LogProving.generateR()
+        "6" -> LogProving.generateZ()
+        "7" -> LogProving.encryptR()
+        "8" -> LogProving.generateI()
+        "9" -> LogProving.sendViaChannel()
+        "10" -> LogProving.checkR()
+    }
+}
+
+
