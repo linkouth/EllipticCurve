@@ -69,3 +69,5 @@ secondTask/*
 !secondTask/.gitkeep
 fourthTask/*
 !fourthTask/.gitkeep
+fifthTask/*
+!fifthTask/.gitkeep

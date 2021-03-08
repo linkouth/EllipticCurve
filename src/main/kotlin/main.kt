@@ -21,6 +21,7 @@ fun main(args: Array<String>) {
         "1" -> firstTask(arguments)
         "2" -> secondTask(arguments)
         "4" -> fourthTask(arguments)
+        "5" -> fifthTask(arguments)
     }
 }
 
@@ -337,4 +338,34 @@ fun fourthTask(arguments: Map<String, String>) {
     }
 }
 
+fun f(point: Point?): BigInteger {
+    return point?.x ?: BigInteger.ZERO
+}
 
+fun fifthTask(arguments: Map<String, String>) {
+    if (arguments[STEP] == null) {
+        println("Передайте номер шага")
+        exitProcess(1)
+    }
+
+    when (arguments[STEP]) {
+        "1" -> EMoney.generateCurve()
+        "2" -> EMoney.generateL()
+        "3" -> EMoney.generateP()
+        "4" -> EMoney.generateMessage()
+        "5" -> EMoney.generateKStreak()
+        "6" -> EMoney.checkAndSendFRStreak()
+        "7" -> EMoney.checkRStreak()
+        "8" -> EMoney.generateAlpha()
+        "9" -> EMoney.generateR()
+        "10" -> EMoney.generateBeta()
+        "11" -> EMoney.applyMask()
+        "12" -> EMoney.checkMStreak()
+        "13" -> EMoney.generateSStreak()
+        "14" -> EMoney.checkSStreakQ()
+        "15" -> EMoney.generateS()
+        "16" -> EMoney.checkM()
+        "17" -> EMoney.checkFR()
+        "18" -> EMoney.checkSQ()
+    }
+}
